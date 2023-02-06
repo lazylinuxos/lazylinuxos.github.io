@@ -1,0 +1,70 @@
+body{
+    margin: 0;
+    padding: 0;
+    font-family: 'Varela Round', sans-serif;
+}
+.lazy-bg{
+    background-image: url("img/bg.png");
+    /* Set rules to fill background */
+    min-height: 100%;
+    min-width: 1024px;
+    /* Set up proportionate scaling */
+    width: 100%;
+    height: auto;
+    /* Set up positioning */
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+.lazy-content{
+    background-color: #6d9cbe;
+    width: 702.72px;
+    height: 803.4px;
+    max-width: 702.72px;
+    max-height: 803.4px;
+    min-width: 702.72px;
+    min-height: 803.4px;
+    position: relative;
+    top: 151.65px;
+    left: 114.3px;
+    text-align: center;
+    border: 2px solid #2c2c2c;
+}
+.heading{
+    color: #fff;
+    border-bottom: 2px solid #519f50;
+    width: 96%;
+    position: relative;
+    left: 2%;
+    display: flex;
+    justify-content: space-between;
+}
+.lazy-menu{
+    background-color: #e6e1dc;
+    height: auto;
+    position: relative;
+    top: 80px;
+}
+.red{
+    color: #da4939;
+    font-weight: bold;
+}
+.download-btn{
+    background-color: #7196bb;
+    color: #fac67f;
+    font-weight: bold;
+}
+.tag{
+    color: #5c647e;
+    font-weight: bold;
+}
+ul{
+    list-style: none;
+}
+.kbsc{
+    background-color: #7196bb;
+    color: #fac67f;
+    border-radius: 5px;
+    padding: 3px;
+    font-weight: bold;
+}
