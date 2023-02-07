@@ -8,12 +8,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">    
-    <link rel="preload" href="assets/winbox.bundle.min.js" as="script">
+    <link rel="stylesheet" href="assets/winbox.min.css">
     <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
 <div class="lazy-bg"></div>
-<script src="assets/winbox.bundle.min.js" async></script>
+<script src="assets/winbox.min.js"></script>
 <script>
     const html = 
     `<div class="lazy-content">
@@ -69,8 +69,6 @@
     new WinBox("Terminal", {
         html: html,
         background: "#2c2c2c",
-        // x: "left",
-        // y: "center",
         top: 50,
         right: 25,
         bottom: 0,
