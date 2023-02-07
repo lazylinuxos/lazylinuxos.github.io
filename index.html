@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,11 +8,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">    
+    <link rel="preload" href="assets/winbox.bundle.min.js" as="script">
     <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
-<div class="lazy-bg">
-    <div class="lazy-content">
+<div class="lazy-bg"></div>
+<script src="assets/winbox.bundle.min.js" async></script>
+<script>
+    const html = 
+    `<div class="lazy-content">
         <h3 class="heading">
             <span>
                 LazyLinux introduction --    
@@ -44,7 +47,7 @@
                 <p style="text-align: left;">
                     Here are some useful keyboard shortcuts as well:
                     <ul style="text-align: left;">
-                        <li><span class="kbsc">Super+`</span> - open dropdown terminal</li>
+                        <li><span class="kbsc">Super+\`</span> - open dropdown terminal</li>
                         <li><span class="kbsc">Super+Space</span> - open rofi menu</li>
                         <li><span class="kbsc">Super+V</span> - open clipboard history</li>
                         <li><span class="kbsc">Shift+Super+C</span> - open color picker</li>
@@ -57,11 +60,25 @@
                 </p>
                 <hr/>
                 <a class="download-btn" target="_blank" href="https://drive.google.com/file/d/11IW5fgUpzVjsfr0gPlQ3U2QU0JXWWZpC/view?usp=share_link">
-                    < DOWNLOAD >
+                    &lt; DOWNLOAD &gt;
                 </a>
             </fieldset>
         </div>
-    </div>
-</div>
+    </div>`;
+
+    new WinBox("Terminal", {
+        html: html,
+        background: "#2c2c2c",
+        x: "left",
+        y: "center",
+        width: "50%",
+        height: "80%",
+        maxwidth: "100%",
+        maxheight: "100%",
+        border: "2px",
+        icon: "assets/img/terminal.svg",
+        class: [ "no-shadow", "no-full" ]
+    });
+</script>
 </body>
 </html>

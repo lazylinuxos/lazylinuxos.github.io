@@ -5,6 +5,8 @@ body{
 }
 .lazy-bg{
     background-image: url("img/bg.png");
+    background-size: cover;
+    background-repeat: no-repeat;
     /* Set rules to fill background */
     min-height: 100%;
     min-width: 1024px;
@@ -17,18 +19,10 @@ body{
     left: 0;
 }
 .lazy-content{
-    background-color: #6d9cbe;
-    width: 702.72px;
-    height: 803.4px;
-    max-width: 702.72px;
-    max-height: 803.4px;
-    min-width: 702.72px;
-    min-height: 803.4px;
     position: relative;
-    top: 151.65px;
-    left: 114.3px;
+    background-color: #6d9cbe;
     text-align: center;
-    border: 2px solid #2c2c2c;
+    height: 100%;
 }
 .heading{
     color: #fff;
@@ -38,12 +32,15 @@ body{
     left: 2%;
     display: flex;
     justify-content: space-between;
+    margin-top: 0;
+    padding-top: 2px;
 }
 .lazy-menu{
     background-color: #e6e1dc;
     height: auto;
-    position: relative;
-    top: 80px;
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
 }
 .red{
     color: #da4939;
