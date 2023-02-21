@@ -57,6 +57,10 @@ body{
 }
 ul{
     list-style: none;
+    text-align: left;
+}
+.text-left{
+    text-align: left;
 }
 .kbsc{
     background-color: #7196bb;
