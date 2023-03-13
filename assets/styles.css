@@ -69,3 +69,11 @@ ul{
     padding: 3px;
     font-weight: bold;
 }
+.github{
+    text-decoration: none;
+    color: #fff;
+}
+.support{
+    text-decoration: none;
+    color: #0030a1;
+}
