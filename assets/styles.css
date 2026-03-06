@@ -23,6 +23,7 @@ body{
     background-color: #6d9cbe;
     text-align: center;
     height: 100%;
+    font-family: monospace;
 }
 .heading{
     color: #fff;
