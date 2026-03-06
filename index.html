@@ -16,17 +16,9 @@
 <div class="lazy-bg"></div>
 <script src="assets/winbox.min.js"></script>
 <script>
+async function loadIntro() {
     const html =
     `<div class="lazy-content">
-        <h3 class="heading">
-            <span>
-                LazyLinux introduction --
-            </span>
-            <a target="_blank" class="github" href="https://github.com/lazylinuxos/lazylinux-mklive">
-                <img src="assets/img/github-mark-white.svg" width="20" alt="">
-                GitHub
-            </a>
-        </h3>
         <div class="lazy-menu">
             <fieldset>
                 <!-- Legend tag using -->
@@ -34,10 +26,11 @@
                     Let's nap instead...
                 </legend>
                 <p class="text-left">
-                    <span class="tag">LazyLinux</span> is a pre-configured distro from Hadrut, Armenia based on <span class="tag">Void Linux</span>
-                    featuring <span class="tag">XFCE</span> desktop and <span class="tag">latest</span> kernel version
-                    to provide a stable and user-friendly experience. It comes with a large number of software preinstalled
-                    for almost any purpose:
+                    <span class="tag">LazyLinux</span> is a fully pre-configured Linux distribution originating from Hadrut, Armenia, built on top of Void Linux, designed specifically for developers, tinkerers, and power users. With <span class="tag">XFCE</span> for a lightweight yet flexible desktop and the <span class="tag">latest</span> stable kernel, it gives you a fast, stable, and productive environment right out of the box.
+
+                    <p class="text-left">
+                        Everything in <span class="tag">LazyLinux</span> is chosen to let you focus on coding, managing systems, and exploring new technologies without wasting time on setup:
+                    </p>
                     <ul>
                         <li>Internet -- <span class="tag">#zen-browser #brave-browser #qbittorrent #remmina #wifi-hotspot #hblock #webapp-manager</span></li>
                         <li>Communication -- <span class="tag">#thunderbird #dino #halloy #telegram</span></li>
@@ -50,6 +43,9 @@
                     </ul>
                 </p>
                 <hr/>
+                <a class="source-btn" target="_blank" href="https://github.com/lazylinuxos/lazylinux-mklive">
+                    &lt; SOURCE &gt;
+                </a>
                 <a class="download-btn" target="_blank" href="https://sourceforge.net/projects/lazylinux/files/latest/download">
                     &lt; DOWNLOAD &gt;
                 </a>
@@ -57,21 +53,217 @@
         </div>
     </div>`;
 
-    new WinBox("Terminal", {
+    new WinBox("LazyLinux Introduction", {
+        index: 1,
         html: html,
         background: "#2c2c2c",
-        top: 50,
-        right: 25,
-        bottom: 0,
-        left: 25,
+        top: 30,
         width: "45%",
-        height: "90%",
+        height: "65%",
         maxwidth: "100%",
         maxheight: "100%",
+        x: "center",
+        y: "center",        
         border: "2px",
         icon: "assets/img/terminal.svg",
-        class: [ "no-shadow", "no-full" ]
+        class: [ "no-shadow", "no-full" ],
     });
+}
+
+async function loadRepoPackages() {
+
+    const CACHE_KEY = "lazy_repo_packages";
+    const CACHE_TIME = "lazy_repo_packages_time";
+    const EXPIRY = 6 * 60 * 60 * 1000;
+
+    let packages = null;
+
+    const cached = localStorage.getItem(CACHE_KEY);
+    const cachedTime = localStorage.getItem(CACHE_TIME);
+
+    if (cached && cachedTime && (Date.now() - cachedTime < EXPIRY)) {
+        packages = JSON.parse(cached);
+    } else {
+
+        const treeApi =
+            "https://api.github.com/repos/lazylinuxos/lazy-repo/git/trees/master?recursive=1";
+
+        const treeRes = await fetch(treeApi);
+        const treeData = await treeRes.json();
+
+        const templates = treeData.tree
+            .filter(f => f.path.startsWith("srcpkgs/") && f.path.endsWith("/template") && !f.path.includes("xbps-triggers"));
+
+        const fetches = templates.map(async file => {
+
+            const raw =
+                "https://raw.githubusercontent.com/lazylinuxos/lazy-repo/master/" + file.path;
+
+            try {
+                const res = await fetch(raw);
+                const text = await res.text();
+
+                const pkg = (text.match(/^pkgname=(.*)/m) || [])[1];
+                const ver = (text.match(/^version=(.*)/m) || [])[1];
+                const desc = (text.match(/^short_desc="(.*)"/m) || [])[1];
+                const homepage = (text.match(/^homepage="(.*)"/m) || [])[1];
+                const changelog = (text.match(/^changelog="(.*)"/m) || [])[1];
+
+                if (!pkg || !ver) return null;
+
+                return {
+                    pkg,
+                    ver,
+                    desc: desc || "",
+                    homepage: homepage || "",
+                    changelog: changelog || ""
+                };
+
+            } catch {
+                return null;
+            }
+        });
+
+        packages = (await Promise.all(fetches))
+            .filter(Boolean)
+            .sort((a,b)=>a.pkg.localeCompare(b.pkg));
+
+        localStorage.setItem(CACHE_KEY, JSON.stringify(packages));
+        localStorage.setItem(CACHE_TIME, Date.now());
+    }
+
+    renderPackages(packages);
+}
+
+function renderPackages(packages) {
+
+    let rows = "";
+
+    for (const p of packages) {
+
+        const name = `
+        <span
+        class="pkg-name"
+        data-pkg="${p.pkg}"
+        style="color:#9cdcfe;cursor:pointer"
+        title="Click to copy install command"
+        >
+        ${p.pkg}
+        </span>`;
+
+        const version = p.changelog
+        ? `<a href="${p.changelog}" target="_blank" style="color:#b5cea8;text-decoration:none">${p.ver}</a>`
+        : `<span style="color:#b5cea8">${p.ver}</span>`;
+
+        rows += `
+        <tr class="pkg-row">
+            <td style="padding:6px 10px">${name}</td>
+            <td style="padding:6px 10px">${version}</td>
+            <td style="padding:6px 10px;color:#fff">
+                <a href="${p.homepage}" target="_blank" style="text-decoration:none">🔗</a>
+                ${p.desc}
+            </td>
+        </tr>`;
+    }
+
+    const html = `
+<div style="color:#fff;font-family:monospace;padding:15px">
+
+<div style="margin-bottom:10px">
+<input id="pkgSearch"
+placeholder="Search packages..."
+style="width:250px;padding:5px;background:#111;border:1px solid #444;color:#fff;font-family:monospace">
+
+<span id="pkgCount" style="margin-left:15px;color:#aaa"></span>
+</div>
+
+<table style="width:100%;border-collapse:collapse;font-size:14px">
+
+<thead>
+<tr>
+<th style="text-align:left;padding:6px 10px;border-bottom:1px solid #444">Package</th>
+<th style="text-align:left;padding:6px 10px;border-bottom:1px solid #444">Version</th>
+<th style="text-align:left;padding:6px 10px;border-bottom:1px solid #444">Description</th>
+</tr>
+</thead>
+
+<tbody>
+${rows}
+</tbody>
+
+</table>
+
+</div>
+`;
+
+    const box = new WinBox("LazyLinux Repository Packages", {
+        index: 0,
+        min: true,
+        html: html,
+        background: "#2c2c2c",
+        top: 30,
+        width: "52%",
+        height: "66%",
+        maxwidth: "100%",
+        maxheight: "100%",
+        x: '10',
+        y: '45',
+        border: "2px",
+        icon: "assets/img/terminal.svg",
+        class: ["no-shadow","no-full"]
+    });
+
+    box.body.style.background = "#000";
+
+    const pkgNames = document.querySelectorAll(".pkg-name");
+
+    pkgNames.forEach(el => {
+
+        el.addEventListener("click", async () => {
+
+            const pkg = el.dataset.pkg;
+            const cmd = `sudo xbps-install -S ${pkg}`;
+
+            await navigator.clipboard.writeText(cmd);
+
+            const original = el.textContent;
+            el.textContent = "✔ copied";
+
+            setTimeout(() => {
+                el.textContent = original;
+            }, 1000);
+        });
+
+    });
+
+    const input = document.getElementById("pkgSearch");
+    const rowsEl = document.querySelectorAll(".pkg-row");
+    const counter = document.getElementById("pkgCount");
+
+    function updateCount() {
+        const visible = [...rowsEl].filter(r => r.style.display !== "none").length;
+        counter.textContent = visible + " / " + rowsEl.length + " packages";
+    }
+
+    input.addEventListener("input", () => {
+
+        const q = input.value.toLowerCase();
+
+        rowsEl.forEach(r => {
+            const text = r.innerText.toLowerCase();
+            r.style.display = text.includes(q) ? "" : "none";
+        });
+
+        updateCount();
+    });
+
+    updateCount();
+}
+
+loadRepoPackages().then(() => {
+    loadIntro();
+});   
+
 </script>
 </body>
 </html>
