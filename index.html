@@ -12,10 +12,45 @@
     <link rel="stylesheet" href="assets/winbox.min.css">
     <link rel="stylesheet" href="assets/styles.css">
 </head>
+<div id="taskbar">
+    <!-- <div id="start-button">☰</div> -->
+    <div id="start-button">
+        <img src="assets/img/lazylinux.png" width="32" alt="icon">
+    </div>
+
+    <div id="start-menu" class="hidden">
+        <div class="menu-item" onclick="openAbout()">About</div>
+        <div class="menu-item" onclick="openRepo()">Packages</div>
+        <div class="menu-item" onclick="openSupport()">Support</div>
+        <div class="menu-item" onclick="openDonation()">Donations</div>
+    </div>
+</div>
 <body>
 <div class="lazy-bg"></div>
+<script src="https://cdn.jsdelivr.net/npm/matrix-js-sdk@latest/dist/browser-matrix.min.js"></script>
 <script src="assets/winbox.min.js"></script>
+<script src="assets/matrix.js"></script>
 <script>
+const winboxes = {};
+
+function createOrFocus(id, createFn) {
+    if (winboxes[id]) {
+        winboxes[id].restore();
+        winboxes[id].focus();
+        return winboxes[id];
+    }
+
+    const box = createFn();
+
+    winboxes[id] = box;
+
+    box.onclose = () => {
+        delete winboxes[id];
+    };
+
+    return box;
+}
+
 async function loadIntro() {
     const html =
     `<div class="lazy-content">
@@ -59,8 +94,8 @@ async function loadIntro() {
         </div>
     </div>`;
 
-    new WinBox("LazyLinux Introduction", {
-        index: 1,
+    createOrFocus("about", () => new WinBox("About", {
+        index: 0,
         html: html,
         background: "#2c2c2c",
         top: 30,
@@ -73,7 +108,7 @@ async function loadIntro() {
         border: "2px",
         icon: "assets/img/terminal.svg",
         class: [ "no-shadow", "no-full" ],
-    });
+    }));
 }
 
 async function loadRepoPackages() {
@@ -202,24 +237,26 @@ ${rows}
 </div>
 `;
 
-    const box = new WinBox("LazyLinux Repository Packages", {
-        index: 0,
-        min: true,
-        html: html,
-        background: "#2c2c2c",
-        top: 30,
-        width: "52%",
-        height: "66%",
-        maxwidth: "100%",
-        maxheight: "100%",
-        x: '10',
-        y: '45',
-        border: "2px",
-        icon: "assets/img/terminal.svg",
-        class: ["no-shadow","no-full"]
+    createOrFocus("packages", () => {
+        const box = new WinBox("Packages", {
+            index: 1,
+            // min: true,
+            html: html,
+            background: "#2c2c2c",
+            top: 30,
+            width: "52%",
+            height: "66%",
+            maxwidth: "100%",
+            maxheight: "100%",
+            x: '10',
+            y: '45',
+            border: "2px",
+            icon: "assets/img/terminal.svg",
+            class: ["no-shadow","no-full"]
+        });
+        box.body.style.background = "#000";
+        return box;
     });
-
-    box.body.style.background = "#000";
 
     const pkgNames = document.querySelectorAll(".pkg-name");
 
@@ -266,10 +303,63 @@ ${rows}
     updateCount();
 }
 
-loadRepoPackages().then(() => {
-    loadIntro();
-});   
+</script>
+<script>
+const startBtn = document.getElementById("start-button");
+const startMenu = document.getElementById("start-menu");
 
+startBtn.addEventListener("click", () => {
+    startMenu.classList.toggle("hidden");
+});
+
+document.addEventListener("click", (e) => {
+    if (!startBtn.contains(e.target) && !startMenu.contains(e.target)) {
+        startMenu.classList.add("hidden");
+    }
+});
+
+function openAbout() {
+    startMenu.classList.add("hidden");
+    loadIntro();
+}
+
+function openRepo() {
+    startMenu.classList.add("hidden");
+    loadRepoPackages();
+}
+
+function openDonation() {
+    startMenu.classList.add("hidden");
+
+    createOrFocus("donations", () => {
+        const box = new WinBox("Donations", {
+            html: `<div style="padding:20px;color:#d4d4d4;font-family:monospace">
+                <h3>Support LazyLinux 💜</h3>
+                <p>Donations help keep the project alive.</p>
+                <a href='https://ko-fi.com/L4L61UD160' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+            </div>`,
+            index: 3,
+            top: 30,
+            background: "#2c2c2c",
+            width: "400px",
+            height: "250px",
+            x: "center",
+            y: "center",
+            border: "2px",
+            icon: "assets/img/terminal.svg",
+            class: ["no-shadow","no-full"]  
+        });
+
+        box.body.style.background = "#000";
+        return box;
+    });
+}
+
+function openSupport() {
+    openMatrixClient();
+}
+
+loadIntro();
 </script>
 </body>
 </html>
